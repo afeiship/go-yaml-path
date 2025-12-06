@@ -6,22 +6,24 @@ import (
 )
 
 // GetAll retrieves all values matching a wildcard path (e.g., "servers.*.host")
-func (yp *YPath) GetAll(path string) []interface{} {
+func (yp *YPath) GetAll(path string) []any {
 	if !strings.Contains(path, "*") {
+		// Non-wildcard paths: use our optimized Get method
 		if val := yp.Get(path); val != nil {
-			return []interface{}{val}
+			return []any{val}
 		}
 		return nil
 	}
 
+	// Wildcard paths: use custom logic with dotpath data
 	parts := strings.Split(path, ".")
-	var results []interface{}
-	yp.collectWildcardValues(yp.data, parts, 0, &results)
+	var results []any
+	yp.collectWildcardValues(yp.dp.Data(), parts, 0, &results)
 	return results
 }
 
 // collectWildcardValues recursively collects values from wildcard paths
-func (yp *YPath) collectWildcardValues(current interface{}, parts []string, index int, results *[]interface{}) {
+func (yp *YPath) collectWildcardValues(current any, parts []string, index int, results *[]any) {
 	if index >= len(parts) {
 		*results = append(*results, current)
 		return
@@ -31,15 +33,15 @@ func (yp *YPath) collectWildcardValues(current interface{}, parts []string, inde
 
 	if part == "*" {
 		switch v := current.(type) {
-		case map[string]interface{}:
+		case map[string]any:
 			for _, val := range v {
 				yp.collectWildcardValues(val, parts, index+1, results)
 			}
-		case map[interface{}]interface{}:
+		case map[any]any:
 			for _, val := range v {
 				yp.collectWildcardValues(val, parts, index+1, results)
 			}
-		case []interface{}:
+		case []any:
 			for _, val := range v {
 				yp.collectWildcardValues(val, parts, index+1, results)
 			}
@@ -48,15 +50,15 @@ func (yp *YPath) collectWildcardValues(current interface{}, parts []string, inde
 	}
 
 	switch v := current.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		if next, ok := v[part]; ok {
 			yp.collectWildcardValues(next, parts, index+1, results)
 		}
-	case map[interface{}]interface{}:
+	case map[any]any:
 		if next, ok := v[part]; ok {
 			yp.collectWildcardValues(next, parts, index+1, results)
 		}
-	case []interface{}:
+	case []any:
 		if index == len(parts)-1 && part == "*" {
 			*results = append(*results, v...)
 		} else {

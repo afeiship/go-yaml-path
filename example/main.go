@@ -155,8 +155,8 @@ metrics:
 
 	// Compare Get() without parameters with Get("")
 	dataFromEmpty := yp.Get("")
-	dataMap, emptyOk := dataFromEmpty.(map[string]interface{})
-	rootMap, rootOk := rootData.(map[string]interface{})
+	dataMap, emptyOk := dataFromEmpty.(map[string]any)
+	rootMap, rootOk := rootData.(map[string]any)
 
 	if emptyOk && rootOk && len(dataMap) == len(rootMap) {
 		fmt.Println("Get() == Get(\"\"): true (same size and type)")

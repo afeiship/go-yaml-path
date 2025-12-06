@@ -8,13 +8,9 @@ import (
 
 // GetStringList retrieves a string list by path, converts other types to strings
 func (yp *YPath) GetStringList(path string) []string {
-	var val interface{}
-
-	// Use GetAll for wildcard paths
+	val := yp.Get(path)
 	if strings.Contains(path, "*") {
-		val = yp.GetAll(path)
-	} else {
-		val = yp.Get(path)
+		val = yp.GetAll(path) // Override with wildcard results if path contains *
 	}
 
 	if val == nil {
@@ -22,7 +18,7 @@ func (yp *YPath) GetStringList(path string) []string {
 	}
 
 	switch v := val.(type) {
-	case []interface{}:
+	case []any:
 		result := make([]string, len(v))
 		for i, item := range v {
 			result[i] = fmt.Sprintf("%v", item)
@@ -39,13 +35,9 @@ func (yp *YPath) GetStringList(path string) []string {
 
 // GetIntList retrieves an integer list by path, with type conversion
 func (yp *YPath) GetIntList(path string) []int {
-	var val interface{}
-
-	// Use GetAll for wildcard paths
+	val := yp.Get(path)
 	if strings.Contains(path, "*") {
-		val = yp.GetAll(path)
-	} else {
-		val = yp.Get(path)
+		val = yp.GetAll(path) // Override with wildcard results if path contains *
 	}
 
 	if val == nil {
@@ -53,7 +45,7 @@ func (yp *YPath) GetIntList(path string) []int {
 	}
 
 	switch v := val.(type) {
-	case []interface{}:
+	case []any:
 		result := make([]int, 0, len(v))
 		for _, item := range v {
 			switch num := item.(type) {
@@ -90,13 +82,9 @@ func (yp *YPath) GetIntList(path string) []int {
 
 // GetBoolList retrieves a boolean list by path, with type conversion
 func (yp *YPath) GetBoolList(path string) []bool {
-	var val interface{}
-
-	// Use GetAll for wildcard paths
+	val := yp.Get(path)
 	if strings.Contains(path, "*") {
-		val = yp.GetAll(path)
-	} else {
-		val = yp.Get(path)
+		val = yp.GetAll(path) // Override with wildcard results if path contains *
 	}
 
 	if val == nil {
@@ -104,7 +92,7 @@ func (yp *YPath) GetBoolList(path string) []bool {
 	}
 
 	switch v := val.(type) {
-	case []interface{}:
+	case []any:
 		result := make([]bool, 0, len(v))
 		for _, item := range v {
 			switch b := item.(type) {
@@ -131,13 +119,9 @@ func (yp *YPath) GetBoolList(path string) []bool {
 
 // GetFloat64List retrieves a float64 list by path, with type conversion
 func (yp *YPath) GetFloat64List(path string) []float64 {
-	var val interface{}
-
-	// Use GetAll for wildcard paths
+	val := yp.Get(path)
 	if strings.Contains(path, "*") {
-		val = yp.GetAll(path)
-	} else {
-		val = yp.Get(path)
+		val = yp.GetAll(path) // Override with wildcard results if path contains *
 	}
 
 	if val == nil {
@@ -145,7 +129,7 @@ func (yp *YPath) GetFloat64List(path string) []float64 {
 	}
 
 	switch v := val.(type) {
-	case []interface{}:
+	case []any:
 		result := make([]float64, 0, len(v))
 		for _, item := range v {
 			switch num := item.(type) {
@@ -181,14 +165,10 @@ func (yp *YPath) GetFloat64List(path string) []float64 {
 }
 
 // GetList is a generic method to get a list of any type
-func (yp *YPath) GetList(path string) []interface{} {
-	var val interface{}
-
-	// Use GetAll for wildcard paths
+func (yp *YPath) GetList(path string) []any {
+	val := yp.Get(path)
 	if strings.Contains(path, "*") {
-		val = yp.GetAll(path)
-	} else {
-		val = yp.Get(path)
+		val = yp.GetAll(path) // Override with wildcard results if path contains *
 	}
 
 	if val == nil {
@@ -196,34 +176,34 @@ func (yp *YPath) GetList(path string) []interface{} {
 	}
 
 	switch v := val.(type) {
-	case []interface{}:
+	case []any:
 		return v
 	case []string:
-		result := make([]interface{}, len(v))
+		result := make([]any, len(v))
 		for i, item := range v {
 			result[i] = item
 		}
 		return result
 	case []int:
-		result := make([]interface{}, len(v))
+		result := make([]any, len(v))
 		for i, item := range v {
 			result[i] = item
 		}
 		return result
 	case []bool:
-		result := make([]interface{}, len(v))
+		result := make([]any, len(v))
 		for i, item := range v {
 			result[i] = item
 		}
 		return result
 	case []float64:
-		result := make([]interface{}, len(v))
+		result := make([]any, len(v))
 		for i, item := range v {
 			result[i] = item
 		}
 		return result
 	default:
 		// Convert single value to list
-		return []interface{}{v}
+		return []any{v}
 	}
 }

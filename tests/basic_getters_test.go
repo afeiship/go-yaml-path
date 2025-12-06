@@ -138,27 +138,27 @@ func TestGetWithoutParameters(t *testing.T) {
 	}
 
 	// Test type is correct
-	dataMap, ok := data.(map[string]interface{})
+	dataMap, ok := data.(map[string]any)
 	if !ok {
-		t.Errorf("Get() should return map[string]interface{}, got %T", data)
+		t.Errorf("Get() should return map[string]any, got %T", data)
 	}
 
 	// Verify Get() returns the same as Get("") - check size equality
 	rootFromGet := yp.Get("")
-	rootMap, rootOk := rootFromGet.(map[string]interface{})
+	rootMap, rootOk := rootFromGet.(map[string]any)
 
 	if !rootOk {
-		t.Error("Get(\"\") should return map[string]interface{}")
+		t.Error("Get(\"\") should return map[string]any")
 	} else if len(dataMap) != len(rootMap) {
 		t.Error("Get() and Get(\"\") should return maps of same size")
 	}
 
 	// Verify Get() returns the same as Get(".")
 	rootFromDot := yp.Get(".")
-	dotMap, dotOk := rootFromDot.(map[string]interface{})
+	dotMap, dotOk := rootFromDot.(map[string]any)
 
 	if !dotOk {
-		t.Error("Get(\".\") should return map[string]interface{}")
+		t.Error("Get(\".\") should return map[string]any")
 	} else if len(dataMap) != len(dotMap) {
 		t.Error("Get() and Get(\".\") should return maps of same size")
 	}

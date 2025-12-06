@@ -1,9 +1,11 @@
-package ypath
+package tests
 
 import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/afeiship/go-yaml-path"
 )
 
 const sampleYAML = `
@@ -43,7 +45,7 @@ numbers:
 `
 
 func TestNew(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -53,7 +55,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestGetString(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -77,7 +79,7 @@ func TestGetString(t *testing.T) {
 }
 
 func TestGetInt(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -103,7 +105,7 @@ func TestGetInt(t *testing.T) {
 }
 
 func TestGetBool(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -130,7 +132,7 @@ func TestGetBool(t *testing.T) {
 }
 
 func TestGetFloat64(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -154,7 +156,7 @@ func TestGetFloat64(t *testing.T) {
 }
 
 func TestArrayAccess(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -179,7 +181,7 @@ func TestArrayAccess(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -219,7 +221,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestExists(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -245,7 +247,7 @@ func TestExists(t *testing.T) {
 }
 
 func TestGetAllWildcard(t *testing.T) {
-	yp, err := NewFromString(sampleYAML)
+	yp, err := ypath.NewFromString(sampleYAML)
 	if err != nil {
 		t.Fatalf("Failed to create YPath: %v", err)
 	}
@@ -284,7 +286,7 @@ func TestGetAllWildcard(t *testing.T) {
 }
 
 func TestEmptyYAML(t *testing.T) {
-	yp, err := NewFromString("")
+	yp, err := ypath.NewFromString("")
 	if err != nil {
 		t.Fatalf("Failed to create YPath from empty string: %v", err)
 	}
@@ -315,7 +317,7 @@ server:
 invalid: [unclosed array
 `
 
-	_, err := NewFromString(invalidYAML)
+	_, err := ypath.NewFromString(invalidYAML)
 	if err == nil {
 		t.Error("Expected error when parsing invalid YAML, but got nil")
 	}
@@ -349,7 +351,7 @@ database:
 	}()
 
 	// Test NewFromFile
-	yp, err := NewFromFile(tempFile)
+	yp, err := ypath.NewFromFile(tempFile)
 	if err != nil {
 		t.Fatalf("Failed to create YPath from file: %v", err)
 	}
@@ -373,7 +375,7 @@ database:
 }
 
 func TestNewFromFile_NonExistent(t *testing.T) {
-	_, err := NewFromFile("nonexistent_file.yaml")
+	_, err := ypath.NewFromFile("nonexistent_file.yaml")
 	if err == nil {
 		t.Error("Expected error when loading non-existent file, but got nil")
 	}
@@ -404,7 +406,7 @@ server:
 		}
 	}()
 
-	_, err = NewFromFile(tempFile)
+	_, err = ypath.NewFromFile(tempFile)
 	if err == nil {
 		t.Error("Expected error when parsing invalid YAML file, but got nil")
 	}
@@ -412,5 +414,166 @@ server:
 	// Verify error message indicates YAML parsing error
 	if !strings.Contains(err.Error(), "failed to parse YAML") {
 		t.Errorf("Expected error message to contain 'failed to parse YAML', got '%s'", err.Error())
+	}
+}
+
+func TestGetStringList(t *testing.T) {
+	yp, err := ypath.NewFromString(sampleYAML)
+	if err != nil {
+		t.Fatalf("Failed to create YPath: %v", err)
+	}
+
+	// Test string array
+	features := yp.GetStringList("features")
+	expected := []string{"authentication", "logging", "monitoring"}
+	if len(features) != len(expected) {
+		t.Errorf("Expected %d features, got %d", len(expected), len(features))
+	}
+	for i, feature := range features {
+		if feature != expected[i] {
+			t.Errorf("Expected feature[%d] = %s, got %s", i, expected[i], feature)
+		}
+	}
+
+	// Test converting non-string array to strings
+	ports := yp.GetStringList("servers.*.port")
+	if len(ports) != 2 {
+		t.Errorf("Expected 2 ports, got %d", len(ports))
+	}
+
+	// Test single value conversion
+	singleValue := yp.GetStringList("server.host")
+	if len(singleValue) != 1 || singleValue[0] != "localhost" {
+		t.Errorf("Expected ['localhost'], got %v", singleValue)
+	}
+
+	// Test non-existent path
+	nonExistent := yp.GetStringList("nonexistent.path")
+	if nonExistent != nil {
+		t.Errorf("Expected nil for non-existent path, got %v", nonExistent)
+	}
+}
+
+func TestGetIntList(t *testing.T) {
+	yp, err := ypath.NewFromString(sampleYAML)
+	if err != nil {
+		t.Fatalf("Failed to create YPath: %v", err)
+	}
+
+	// Test int array
+	ports := yp.GetIntList("servers.*.port")
+	expected := []int{8001, 8002}
+	if len(ports) != len(expected) {
+		t.Errorf("Expected %d ports, got %d", len(expected), len(ports))
+	}
+	for i, port := range ports {
+		if port != expected[i] {
+			t.Errorf("Expected port[%d] = %d, got %d", i, expected[i], port)
+		}
+	}
+
+	// Test converting string numbers to int
+	stringNumbers := yp.GetIntList("numbers")
+	if len(stringNumbers) > 0 {
+		t.Logf("String numbers conversion result: %v", stringNumbers)
+	}
+
+	// Test single value conversion
+	singleValue := yp.GetIntList("server.port")
+	if len(singleValue) != 1 || singleValue[0] != 8080 {
+		t.Errorf("Expected [8080], got %v", singleValue)
+	}
+
+	// Test non-existent path
+	nonExistent := yp.GetIntList("nonexistent.path")
+	if nonExistent != nil {
+		t.Errorf("Expected nil for non-existent path, got %v", nonExistent)
+	}
+}
+
+func TestGetBoolList(t *testing.T) {
+	yp, err := ypath.NewFromString(sampleYAML)
+	if err != nil {
+		t.Fatalf("Failed to create YPath: %v", err)
+	}
+
+	// Test bool array
+	activeServers := yp.GetBoolList("servers.*.active")
+	expected := []bool{true, false}
+	if len(activeServers) != len(expected) {
+		t.Errorf("Expected %d active flags, got %d", len(expected), len(activeServers))
+	}
+	for i, active := range activeServers {
+		if active != expected[i] {
+			t.Errorf("Expected active[%d] = %t, got %t", i, expected[i], active)
+		}
+	}
+
+	// Test converting string booleans
+	stringBools := yp.GetBoolList("numbers")
+	if len(stringBools) > 0 {
+		t.Logf("String booleans conversion result: %v", stringBools)
+	}
+
+	// Test single value conversion
+	singleValue := yp.GetBoolList("server.ssl")
+	if len(singleValue) != 1 || singleValue[0] != true {
+		t.Errorf("Expected [true], got %v", singleValue)
+	}
+
+	// Test non-existent path
+	nonExistent := yp.GetBoolList("nonexistent.path")
+	if nonExistent != nil {
+		t.Errorf("Expected nil for non-existent path, got %v", nonExistent)
+	}
+}
+
+func TestGetFloat64List(t *testing.T) {
+	yp, err := ypath.NewFromString(sampleYAML)
+	if err != nil {
+		t.Fatalf("Failed to create YPath: %v", err)
+	}
+
+	// Test float array
+	metrics := yp.GetFloat64List("numbers")
+	if len(metrics) > 0 {
+		t.Logf("Float numbers conversion result: %v", metrics)
+	}
+
+	// Test single value conversion
+	singleValue := yp.GetFloat64List("database.connection.timeout")
+	if len(singleValue) != 1 || singleValue[0] != 30.5 {
+		t.Errorf("Expected [30.5], got %v", singleValue)
+	}
+
+	// Test non-existent path
+	nonExistent := yp.GetFloat64List("nonexistent.path")
+	if nonExistent != nil {
+		t.Errorf("Expected nil for non-existent path, got %v", nonExistent)
+	}
+}
+
+func TestGetList(t *testing.T) {
+	yp, err := ypath.NewFromString(sampleYAML)
+	if err != nil {
+		t.Fatalf("Failed to create YPath: %v", err)
+	}
+
+	// Test getting interface array
+	features := yp.GetList("features")
+	if len(features) != 3 {
+		t.Errorf("Expected 3 features, got %d", len(features))
+	}
+
+	// Test single value to list conversion
+	singleValue := yp.GetList("server.host")
+	if len(singleValue) != 1 || singleValue[0] != "localhost" {
+		t.Errorf("Expected ['localhost'], got %v", singleValue)
+	}
+
+	// Test non-existent path
+	nonExistent := yp.GetList("nonexistent.path")
+	if nonExistent != nil {
+		t.Errorf("Expected nil for non-existent path, got %v", nonExistent)
 	}
 }

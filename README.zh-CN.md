@@ -140,6 +140,42 @@ active := yp.GetBool("server.active") // false
 timeout := yp.GetFloat64("connection.timeout")  // 30.5
 ```
 
+#### `GetStringList(path string) []string`
+检索字符串列表，转换其他类型为字符串。
+
+```go
+features := yp.GetStringList("features")                    // ["authentication", "logging"]
+ports := yp.GetStringList("servers.*.port")                 // ["8001", "8002"] (支持通配符)
+```
+
+#### `GetIntList(path string) []int`
+检索整数列表，支持类型转换。
+
+```go
+ports := yp.GetIntList("servers.*.port")                    // [8001, 8002] (支持通配符)
+```
+
+#### `GetBoolList(path string) []bool`
+检索布尔值列表，支持类型转换。
+
+```go
+active := yp.GetBoolList("servers.*.active")                // [true, false] (支持通配符)
+```
+
+#### `GetFloat64List(path string) []float64`
+检索 float64 列表，支持类型转换。
+
+```go
+metrics := yp.GetFloat64List("numbers")                     // [3.14, 42.0]
+```
+
+#### `GetList(path string) []interface{}`
+通用方法，获取任意类型的列表。
+
+```go
+servers := yp.GetList("servers")                           // 服务器配置的 []interface{}
+```
+
 #### `Exists(path string) bool`
 检查路径是否存在于 YAML 数据中。
 

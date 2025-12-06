@@ -140,6 +140,42 @@ Retrieves a float64 value, with type conversion.
 timeout := yp.GetFloat64("connection.timeout")  // 30.5
 ```
 
+#### `GetStringList(path string) []string`
+Retrieves a string list, converts other types to strings.
+
+```go
+features := yp.GetStringList("features")                    // ["authentication", "logging"]
+ports := yp.GetStringList("servers.*.port")                 // ["8001", "8002"] (wildcard support)
+```
+
+#### `GetIntList(path string) []int`
+Retrieves an integer list, with type conversion.
+
+```go
+ports := yp.GetIntList("servers.*.port")                    // [8001, 8002] (wildcard support)
+```
+
+#### `GetBoolList(path string) []bool`
+Retrieves a boolean list, with type conversion.
+
+```go
+active := yp.GetBoolList("servers.*.active")                // [true, false] (wildcard support)
+```
+
+#### `GetFloat64List(path string) []float64`
+Retrieves a float64 list, with type conversion.
+
+```go
+metrics := yp.GetFloat64List("numbers")                     // [3.14, 42.0]
+```
+
+#### `GetList(path string) []interface{}`
+Generic method to get a list of any type.
+
+```go
+servers := yp.GetList("servers")                           // []interface{} of server configs
+```
+
 #### `Exists(path string) bool`
 Checks if a path exists in the YAML data.
 

@@ -172,5 +172,30 @@ metrics:
 		fmt.Printf("Features: %v\n", ypFile.GetAll("features.*"))
 	}
 
+	fmt.Println()
+
+	// Demonstrate GetList methods
+	fmt.Println("=== GetList Methods Demo ===")
+
+	// String list
+	featuresList := yp.GetStringList("features")
+	fmt.Printf("Features (string list): %v\n", featuresList)
+
+	// Integer list with wildcard
+	ports := yp.GetIntList("servers.*.port")
+	fmt.Printf("Server Ports (int list with wildcard): %v\n", ports)
+
+	// Boolean list with wildcard
+	activeServers := yp.GetBoolList("servers.*.active")
+	fmt.Printf("Active Servers (bool list): %v\n", activeServers)
+
+	// Generic list
+	serverList := yp.GetList("servers")
+	fmt.Printf("Server Configs (generic list): %v\n", serverList)
+
+	// Single value to list conversion
+	singleHost := yp.GetStringList("server.host")
+	fmt.Printf("Single Host as List: %v\n", singleHost)
+
 	fmt.Println("\n=== Demo Complete ===")
 }

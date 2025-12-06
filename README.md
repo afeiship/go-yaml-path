@@ -1,22 +1,14 @@
-# rails-module-users
-> Rails module for users.
+# go-yaml-path
+> YAML config access via hierarchical dot paths.
 
+## installation
+```sh
+go get -u github.com/afeiship/go-yaml-path
+```
 
-## model
-> The users table fileds.
+## usage
+```go
+package main
 
-| field           | type   | length | description               |
-| --------------- | ------ | ------ | ------------------------- |
-| username        | string | -      | unique user name          |
-| email           | string | -      | unique user email         |
-| password_digest | string | -      | unique user password(md5) |
-| access_token    | string | -      | for login                 |
-
-## seed
-```rb
-User.create({
-    username: 'afeiship',
-    password:'123123',
-    email: '1290657123@qq.com'
-});
+// code here
 ```

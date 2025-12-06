@@ -1,5 +1,11 @@
 {
-  "name": "rails-module-pages",
+  "name": "@jswork/go-yaml-path",
   "private": true,
-  "dependencies": {}
+  "version": "1.0.0",
+  "description": "YAML config access via hierarchical dot paths.",
+  "license": "MIT",
+  "scripts": {
+    "test": "go test *.go -v",
+    "release": "release-it"
+  }
 }

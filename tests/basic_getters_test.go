@@ -128,6 +128,51 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestGetWithoutParameters(t *testing.T) {
+	yp := createSampleYPath(t)
+
+	// Test Get() with no parameters returns root data
+	data := yp.Get()
+	if data == nil {
+		t.Error("Get() should return root data")
+	}
+
+	// Test type is correct
+	dataMap, ok := data.(map[string]interface{})
+	if !ok {
+		t.Errorf("Get() should return map[string]interface{}, got %T", data)
+	}
+
+	// Verify Get() returns the same as Get("") - check size equality
+	rootFromGet := yp.Get("")
+	rootMap, rootOk := rootFromGet.(map[string]interface{})
+
+	if !rootOk {
+		t.Error("Get(\"\") should return map[string]interface{}")
+	} else if len(dataMap) != len(rootMap) {
+		t.Error("Get() and Get(\"\") should return maps of same size")
+	}
+
+	// Verify Get() returns the same as Get(".")
+	rootFromDot := yp.Get(".")
+	dotMap, dotOk := rootFromDot.(map[string]interface{})
+
+	if !dotOk {
+		t.Error("Get(\".\") should return map[string]interface{}")
+	} else if len(dataMap) != len(dotMap) {
+		t.Error("Get() and Get(\".\") should return maps of same size")
+	}
+
+	// Test that returned data contains expected keys
+	if _, ok := dataMap["server"]; !ok {
+		t.Error("Get() should contain 'server' key")
+	}
+
+	if _, ok := dataMap["database"]; !ok {
+		t.Error("Get() should contain 'database' key")
+	}
+}
+
 func TestExists(t *testing.T) {
 	yp := createSampleYPath(t)
 

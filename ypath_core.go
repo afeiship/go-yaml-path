@@ -7,12 +7,14 @@ import (
 )
 
 // Get retrieves a value by dot notation path (e.g., "server.host", "database.connection.pool.max")
-func (yp *YPath) Get(path string) interface{} {
-	if path == "" || path == "." {
+// If no path is provided or path is empty/dot, returns the entire YAML data structure
+func (yp *YPath) Get(path ...string) interface{} {
+	if len(path) == 0 || path[0] == "" || path[0] == "." {
 		return yp.data
 	}
 
-	parts := strings.Split(path, ".")
+	// Use the first path parameter (for backward compatibility)
+	parts := strings.Split(path[0], ".")
 	current := yp.data
 
 	for _, part := range parts {

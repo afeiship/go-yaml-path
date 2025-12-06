@@ -148,6 +148,22 @@ metrics:
 	fmt.Printf("Features Array: %v\n", features)
 	fmt.Println()
 
+	// Demonstrate Get() method without parameters
+	fmt.Println("=== Get() Method Demo (No Parameters) ===")
+	rootData := yp.Get()
+	fmt.Printf("Root Data (using Get()): %T\n", rootData)
+
+	// Compare Get() without parameters with Get("")
+	dataFromEmpty := yp.Get("")
+	dataMap, emptyOk := dataFromEmpty.(map[string]interface{})
+	rootMap, rootOk := rootData.(map[string]interface{})
+
+	if emptyOk && rootOk && len(dataMap) == len(rootMap) {
+		fmt.Println("Get() == Get(\"\"): true (same size and type)")
+	} else {
+		fmt.Println("Get() == Get(\"\"): false")
+	}
+
 	// Handle non-existent paths gracefully
 	fmt.Println("Handling Non-existent Paths:")
 	fmt.Printf("Non-existent string: '%s'\n", yp.GetString("nonexistent.string"))

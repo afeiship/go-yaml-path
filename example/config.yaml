@@ -1,0 +1,23 @@
+server:
+  host: example.com
+  port: 3000
+  ssl: true
+
+database:
+  host: db.example.com
+  port: 5432
+  name: myapp
+  timeout: 30.5
+
+features:
+  - authentication
+  - logging
+  - monitoring
+
+servers:
+  - host: api1.example.com
+    port: 8001
+    active: true
+  - host: api2.example.com
+    port: 8002
+    active: false

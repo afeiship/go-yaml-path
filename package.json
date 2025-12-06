@@ -1,7 +1,7 @@
 {
   "name": "@jswork/go-yaml-path",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YAML config access via hierarchical dot paths.",
   "license": "MIT",
   "scripts": {
